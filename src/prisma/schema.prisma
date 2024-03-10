@@ -4,9 +4,19 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+
+
 generator client {
   provider = "prisma-client-js"
 }
+
+generator pothos {
+  provider = "prisma-pothos-types"
+  clientOutput = "@prisma/client"
+  output = "./pothos-types.ts"
+}
+
+
 
 
 datasource db {
@@ -18,15 +28,19 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
+  email     String   @unique
   password  String 
+  sentMessages Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Message {
   id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-  authorId  Int
-  receiverId Int
-  author    User     @relation(fields: [authorId], references: [id])
-  receiver  User     @relation (fields: [receiverId], references: [id])
+  message     String
+  createdAt   DateTime  @default(now())
+  authorId    Int
+  receiverId  Int
+  author      User      @relation(name: "SentMessages", fields: [authorId], references: [id])
+  receiver    User      @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
 }
+
