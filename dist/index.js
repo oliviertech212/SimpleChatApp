@@ -1,22 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const server_1 = require("@apollo/server");
+exports.server = void 0;
+const apollo_server_1 = require("apollo-server");
+const apollo_server_core_1 = require("apollo-server-core");
+const apollo_server_core_2 = require("apollo-server-core");
 const client_1 = require("@prisma/client");
-const standalone_1 = require("@apollo/server/standalone");
 const schema_1 = require("./schema");
 const prisma = new client_1.PrismaClient();
-const server = new server_1.ApolloServer({ schema: schema_1.schema });
+exports.server = new apollo_server_1.ApolloServer({
+    schema: schema_1.schema,
+    context: async ({ req, res }) => ({
+        req,
+    }),
+    plugins: [
+        process.env.NODE_ENV === "production"
+            ? (0, apollo_server_core_2.ApolloServerPluginLandingPageProductionDefault)({
+                graphRef: "my-graph-id@my-graph-variant",
+                footer: false,
+            })
+            : (0, apollo_server_core_1.ApolloServerPluginLandingPageLocalDefault)({ footer: false }),
+    ],
+});
+const port = process.env.PORT || 4000;
 const app = async () => {
     try {
         await prisma.$connect();
         console.log("Connected to the database");
-        const url = await (0, standalone_1.startStandaloneServer)(server, {
-            listen: { port: process.env.PORT },
-            context: async ({ req, res }) => ({
-                req,
-            }),
+        exports.server.listen({ port }).then(({ url }) => {
+            console.log(`  Server ready at ${url}`);
         });
-        console.log(`🚀  Server ready at:    http://localhost:${process.env.PORT}     `);
     }
     catch (error) {
         console.error(error);

@@ -2,13 +2,11 @@
   "name": "chatapp",
   "version": "1.0.0",
   "description": "this is simple realtime chat application made by oliviertech",
-  "main": "index.ts",  
-  
+  "main": "index.ts",
   "scripts": {
     "dev": "ts-node-dev --no-notify --respawn --transpile-only src/index.ts",
     "start": "node dist/index.js",
-
-     "build": "npm run generate && tsc",
+    "build": "npm run generate && tsc",
     "generate": "npx prisma generate --schema=./src/prisma/schema.prisma",
     "migrate": "npx prisma migrate dev --name init  --schema=./src/prisma/schema.prisma"
   },
