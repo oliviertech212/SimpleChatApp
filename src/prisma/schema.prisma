@@ -38,9 +38,9 @@ model Message {
   id        Int      @id @default(autoincrement())
   message     String
   createdAt   DateTime  @default(now())
-  authorId    Int
+  senderId    Int
   receiverId  Int
-  author      User      @relation(name: "SentMessages", fields: [authorId], references: [id])
+  sender      User      @relation(name: "SentMessages", fields: [senderId], references: [id])
   receiver    User      @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
 }
 

@@ -36,10 +36,10 @@ export default interface PrismaTypes {
         Where: Prisma.MessageWhereInput;
         Create: {};
         Update: {};
-        RelationName: "author" | "receiver";
+        RelationName: "sender" | "receiver";
         ListRelations: never;
         Relations: {
-            author: {
+            sender: {
                 Shape: User;
                 Name: "User";
                 Nullable: false;
