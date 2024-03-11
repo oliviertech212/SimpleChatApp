@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.schema = void 0;
+const builder_1 = require("../builder");
+require("./user");
+require("./message");
+const fs_1 = require("fs");
+const path_1 = require("path");
+const graphql_1 = require("graphql");
+exports.schema = builder_1.builder.toSchema({});
+(0, fs_1.writeFileSync)((0, path_1.resolve)(__dirname, "../../schema.graphql"), (0, graphql_1.printSchema)(exports.schema));

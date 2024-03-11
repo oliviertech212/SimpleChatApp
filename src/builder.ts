@@ -1,20 +1,28 @@
 import SchemaBuilder from "@pothos/core";
-import { PrismaClient, User, Message } from "@prisma/client";
+import { DateTimeResolver } from "graphql-scalars";
 import PrismaPlugin from "@pothos/plugin-prisma";
-import PrismaTypes from "./prisma/pothos-types";
-// import { DateTimeResolver } from 'graphql-scalars'
 import { prisma as db } from "./db";
-
-export const builder = new SchemaBuilder({ prisma: { client: db } });
 
 type user = {
   id: number;
   username: string;
   email: string;
   password: string;
-  sentMessages: Message[];
-  receivedMessages: Message[];
+  sentMessages: message[];
+  receivedMessages: message[];
 };
+
+type UserWithToken = {
+  id: number;
+  username: string;
+  email: string;
+  token: string;
+};
+interface Args {
+  username: string;
+  email: string;
+  password: string;
+}
 
 type message = {
   id: number;
@@ -24,29 +32,14 @@ type message = {
   receiverId: number;
 };
 
-const UserObject = builder.objectRef<User>("User");
-const MessageObject = builder.objectRef<Message>("Message");
-UserObject.implement({
-  fields: (t) => ({
-    id: t.exposeID("id"),
-    username: t.exposeString("username"),
-    email: t.exposeString("email"),
-    password: t.exposeString("password"),
-  }),
-});
+export const builder = new SchemaBuilder<{
+  Context: {};
+  Scalars: {
+    DateTime: {
+      Input: Date;
+      Output: Date;
+    };
+  };
+}>({ prisma: { client: db } });
 
-builder.queryType({
-  fields: (t) => ({
-    get_me: t.field({
-      type: UserObject,
-      resolve: (root, args, ctx) =>
-        db.user
-          .findUniqueOrThrow({
-            where: {
-              id: 1,
-            },
-          })
-          .then((user) => user as user),
-    }),
-  }),
-});
+builder.addScalarType("DateTime", DateTimeResolver, {});
